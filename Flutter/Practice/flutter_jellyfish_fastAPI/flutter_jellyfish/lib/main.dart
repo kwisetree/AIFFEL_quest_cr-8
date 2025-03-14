@@ -159,7 +159,6 @@ class MyHomePageState extends State<MyHomePage> {
         // 캔버스를 이미지로 변환
         final dataUrl = canvasElement.toDataUrl('image/png');
         final byteString = html.window.atob(dataUrl.split(',')[1]);
-        final mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
         
         final buffer = Uint8List(byteString.length);
         for (var i = 0; i < byteString.length; i++) {
@@ -172,7 +171,7 @@ class MyHomePageState extends State<MyHomePage> {
         // 카메라 UI 제거
         cameraContainer.remove();
         
-        // 이미지 업데이트 및 갤러리에 저장
+        // 이미지 업데이트
         setState(() {
           imageBytes = buffer;
           selectedImageUrl = null;
@@ -180,7 +179,8 @@ class MyHomePageState extends State<MyHomePage> {
           result = "";
         });
         
-        await GalleryService.addImage(buffer);
+        // 카메라로 찍은 이미지는 분석 전까지 갤러리에 저장하지 않음
+        // 분석 완료 후 predictImage() 메서드에서 저장
       });
 
       // 취소 버튼 클릭 이벤트
@@ -216,8 +216,8 @@ class MyHomePageState extends State<MyHomePage> {
           result = "";
         });
         
-        // 갤러리에 이미지 저장
-        await GalleryService.addImage(bytes);
+        // 갤러리에 이미지 저장하는 코드 제거
+        // 분석 시에만 저장하도록 predictImage() 메서드에서 처리
       });
       
       reader.readAsArrayBuffer(file);
@@ -262,14 +262,14 @@ class MyHomePageState extends State<MyHomePage> {
           isLoading = false;
         });
         
-        // 갤러리 이미지 업데이트 (예측 결과 포함)
-        if (predictionResult != null) {
+        // 분석 완료 후 갤러리에 이미지 저장 (예측 결과 포함)
+        if (predictionResult != null && imageBytes != null) {
           String? label = predictionResult!['predicted_label'];
           double? score = predictionResult!['prediction_score'] != null
               ? double.parse(predictionResult!['prediction_score'].toString())
               : null;
               
-          // 새 이미지로 저장 (원래는 기존 이미지 업데이트 기능이 필요하지만 간단하게 구현)
+          // 이미지를 갤러리에 저장
           await GalleryService.addImage(
             imageBytes!,
             predictionLabel: label,
@@ -290,20 +290,6 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // 종류 버튼 - 예측된 클래스 표시
-  void showPredictedLabel() {
-    if (predictionResult == null) {
-      setState(() {
-        result = "먼저 이미지를 분석해주세요.";
-      });
-      return;
-    }
-
-    setState(() {
-      result = "종류: ${predictionResult!['predicted_label']}";
-    });
-  }
-
   // 확률 버튼 - 예측 확률 표시
   void showPredictionScore() {
     if (predictionResult == null) {
@@ -315,6 +301,20 @@ class MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       result = "확률: ${predictionResult!['prediction_score']}";
+    });
+  }
+
+  // 종류 버튼 - 예측된 클래스 표시
+  void showPredictedLabel() {
+    if (predictionResult == null) {
+      setState(() {
+        result = "먼저 이미지를 분석해주세요.";
+      });
+      return;
+    }
+
+    setState(() {
+      result = "종류: ${predictionResult!['predicted_label']}";
     });
   }
 
