@@ -84,21 +84,113 @@ class MyHomePageState extends State<MyHomePage> {
   final ImagePicker _picker = ImagePicker();
 
   // 카메라로 이미지 캡쳐
+  // 카메라에 접근하여 사진 촬영
   Future<void> captureImage() async {
     try {
-      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-      if (photo != null) {
-        final bytes = await photo.readAsBytes();
+      // HTML 요소 생성
+      html.DivElement cameraContainer = html.DivElement()
+        ..style.position = 'fixed'
+        ..style.top = '0'
+        ..style.left = '0'
+        ..style.width = '100%'
+        ..style.height = '100%'
+        ..style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
+        ..style.zIndex = '1000'
+        ..style.display = 'flex'
+        ..style.flexDirection = 'column'
+        ..style.justifyContent = 'center'
+        ..style.alignItems = 'center';
+
+      html.VideoElement videoElement = html.VideoElement()
+        ..style.width = '100%'
+        ..style.maxWidth = '500px'
+        ..style.backgroundColor = 'black'
+        ..autoplay = true;
+
+      html.CanvasElement canvasElement = html.CanvasElement()
+        ..style.display = 'none';
+
+      html.DivElement buttonContainer = html.DivElement()
+        ..style.display = 'flex'
+        ..style.margin = '20px';
+
+      html.ButtonElement captureButton = html.ButtonElement()
+        ..text = '촬영'
+        ..style.padding = '10px 20px'
+        ..style.margin = '0 10px'
+        ..style.backgroundColor = '#4CAF50'
+        ..style.color = 'white'
+        ..style.border = 'none'
+        ..style.borderRadius = '5px'
+        ..style.cursor = 'pointer';
+
+      html.ButtonElement cancelButton = html.ButtonElement()
+        ..text = '취소'
+        ..style.padding = '10px 20px'
+        ..style.margin = '0 10px'
+        ..style.backgroundColor = '#f44336'
+        ..style.color = 'white'
+        ..style.border = 'none'
+        ..style.borderRadius = '5px'
+        ..style.cursor = 'pointer';
+
+      buttonContainer.children.addAll([captureButton, cancelButton]);
+      cameraContainer.children.addAll([videoElement, buttonContainer]);
+      
+      html.document.body!.append(cameraContainer);
+
+      // 카메라 액세스 요청
+      final mediaStream = await html.window.navigator.mediaDevices!.getUserMedia({
+        'video': true,
+        'audio': false,
+      });
+
+      videoElement.srcObject = mediaStream;
+
+      // 촬영 버튼 클릭 이벤트
+      captureButton.onClick.listen((_) async {
+        // 비디오 크기 설정
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+
+        // 비디오 프레임을 캔버스에 그리기
+        canvasElement.context2D.drawImage(videoElement, 0, 0);
+        
+        // 캔버스를 이미지로 변환
+        final dataUrl = canvasElement.toDataUrl('image/png');
+        final byteString = html.window.atob(dataUrl.split(',')[1]);
+        final mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+        
+        final buffer = Uint8List(byteString.length);
+        for (var i = 0; i < byteString.length; i++) {
+          buffer[i] = byteString.codeUnitAt(i);
+        }
+
+        // 트랙 정지 및 리소스 해제
+        mediaStream.getTracks().forEach((track) => track.stop());
+        
+        // 카메라 UI 제거
+        cameraContainer.remove();
+        
+        // 이미지 업데이트 및 갤러리에 저장
         setState(() {
-          imageBytes = bytes;
+          imageBytes = buffer;
           selectedImageUrl = null;
           predictionResult = null;
           result = "";
         });
         
-        // 갤러리에 이미지 저장
-        await GalleryService.addImage(bytes);
-      }
+        await GalleryService.addImage(buffer);
+      });
+
+      // 취소 버튼 클릭 이벤트
+      cancelButton.onClick.listen((_) {
+        // 트랙 정지 및 리소스 해제
+        mediaStream.getTracks().forEach((track) => track.stop());
+        
+        // 카메라 UI 제거
+        cameraContainer.remove();
+      });
     } catch (e) {
       setState(() {
         result = "카메라 에러: $e";
