@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "84962114902",
+    "project_id": "flutterjellyfish",
+    "storage_bucket": "flutterjellyfish.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84962114902:android:46d92c4850322f4b7f2af7",
+        "android_client_info": {
+          "package_name": "com.example.flutter_jellyfish"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZ6mzYyKk7h_sRW6ovnGwebPFFEUZbRUA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
