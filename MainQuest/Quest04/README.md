@@ -1,4 +1,4 @@
-![join-room-y2k](https://github.com/user-attachments/assets/9f3adf0d-577b-4a4d-971a-74fb77a4e100)# Pixel Party  
+# Pixel Party  
 ## 평가 루브릭  
 [] 기본 기능 구현 및 UI 디자인   
     - 앱이 오류 없이 실행되며 기본 기능이 작동한다.  
