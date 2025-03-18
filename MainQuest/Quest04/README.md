@@ -1,4 +1,4 @@
-# Pixel Party  
+![join-room-y2k](https://github.com/user-attachments/assets/9f3adf0d-577b-4a4d-971a-74fb77a4e100)# Pixel Party  
 ## 평가 루브릭  
 [] 기본 기능 구현 및 UI 디자인   
     - 앱이 오류 없이 실행되며 기본 기능이 작동한다.  
@@ -43,13 +43,17 @@
 
 '''  
 ### 프레임워크  
+![1](https://github.com/user-attachments/assets/5f9ab38c-a0b2-48c9-abda-267929e02837)  
+![2](https://github.com/user-attachments/assets/5528aa2b-aa08-41a2-8c6b-1f608e8a0d2a)  
+![3](https://github.com/user-attachments/assets/f8ee849f-9248-4e52-aec2-126bf8c36112)  
 
- 
 ## 구조
 ### 사용 패키지와 API
 ### 아키텍처
-- 상태 관리, 데이터 동기화(입력-피드백)
+- 상태 관리, 데이터 동기화(입력-피드백)   
 - 
 ### 와이어프레임
-- 네비게이션
+- 네비게이션  
+
+
 ## 
