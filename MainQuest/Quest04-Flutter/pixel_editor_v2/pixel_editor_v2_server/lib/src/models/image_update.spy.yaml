@@ -1,0 +1,8 @@
+class: ImageUpdate
+fields:
+    pixelIndex: int # The index of the pixel in the byte array.
+    color: int # The new color value of the pixel.
+
+
+# ImageUpdate model captures changes to individual pixels in the image.
+# With the models defineds, run serverpod generate to create the actual Dart files for these models.
